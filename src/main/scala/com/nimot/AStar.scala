@@ -1,10 +1,13 @@
 package com.nimot
 
 /**
- * Findet den kürzesten Weg von firstNode zu destinationNode und umgeht
- * dabei jedes Hindernis
+ * A* is a type of heuristical search algorithm.
+ * Heuristic means we need to make an estimate at each node
+ * of how far we are from the goal. 
+ * 
+ * The algorithm below is processing a list of nodes:ANode
+ * having a square grid structure.
  *
- * Laufzeit = O(n^2)
  */
 class AStar[A](val nodes: List[ANode[A]])
 {
@@ -65,10 +68,12 @@ class AStar[A](val nodes: List[ANode[A]])
   }
 
 
+
   /****************************************************************
    *      private
    ****************************************************************/
 
+ 
   private def buildPath(destinationNode: N): List[N] = {
     destinationNode.parentNode match {
       case Some(x) => destinationNode :: buildPath(x)
@@ -76,24 +81,43 @@ class AStar[A](val nodes: List[ANode[A]])
     }
   }
 
+
   private def isOpen(node: N, openNodes: List[N]): Boolean = {
     openNodes.exists(n => node == n)
   }
 
+
   private def isClosed(node: N, closedNodes: List[N]): Boolean = {
     closedNodes.exists(n => node == n)
   }
+  
 
+  /**
+   * Euclidian heuristic calculates the costs [cost] using 
+   * a measure given by the Pythagorean formula [destinationNode].
+   */
   private def euclidianHeuristic(node: N, destinationNode: N, cost: Float = 1.0f): Float = {
     val dx = node.x - destinationNode.x
     val dy = node.y - destinationNode.y
     scala.math.sqrt(dx * dx + dy * dy).toFloat * cost
   }
 
+  /**
+   * Manhattan heuristic calculates the costs [cost] moving
+   * horizontally and vertically to reach the target [destinationNode] 
+   * from the current node [node].
+   * 
+   */
   private def manhattanHeuristic(node: N, destinationNode: N, cost: Float = 1.0f): Float = {
     math.abs(node.x - destinationNode.x) * cost + math.abs(node.y + destinationNode.y) * cost
   }
 
+  /**
+   * Diagonal heuristic calculates the costs [cost] being able
+   * to move diagonally  to reach the target [destinationNode] 
+   * from the current node [node].
+   * 
+   */
   private def diagonalHeuristic(node: N, destinationNode: N, cost: Float = 1.0f,
                                 diagonalCost: Float = 1.0f): Float = {
     val dx: Int = math.abs(node.x - destinationNode.x)
@@ -105,6 +129,7 @@ class AStar[A](val nodes: List[ANode[A]])
     diagonalCost * diag + cost * (straight - 2 * diag)
   }
 
+  
   private def findConnectedNodes(node: N): List[N] = {
     nodes.filter{
       n =>
