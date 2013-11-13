@@ -1,4 +1,4 @@
-A* 
+A* (A Star)
 -----
 
 A* - heuristic search algorithm. Supports diagonal, manhattan and euclidian distance 
